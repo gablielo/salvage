@@ -5,7 +5,8 @@ import { getZoneAt } from '../utils/MapGenerator.js';
 export default class Player {
   constructor(scene, x, y) {
     this.scene = scene;
-    this.sprite = scene.physics.add.sprite(x, y, 'player');
+    this.sprite = scene.physics.add.sprite(x, y, 'player_down');
+    this.facing = 'down';
     this.sprite.setDepth(10);
     this.sprite.setCollideWorldBounds(true);
     this.sprite.body.setSize(18, 18);
@@ -77,6 +78,25 @@ export default class Player {
     }
 
     this.sprite.setVelocity(vx * speed, vy * speed);
+
+    // Direction — horizontal takes priority on diagonals
+    let newFacing = this.facing;
+    if (vx < 0) newFacing = 'left';
+    else if (vx > 0) newFacing = 'right';
+    else if (vy < 0) newFacing = 'up';
+    else if (vy > 0) newFacing = 'down';
+
+    if (newFacing !== this.facing) {
+      this.facing = newFacing;
+      this.sprite.setTexture('player_' + this.facing);
+    }
+
+    // Sprint tint
+    if (this.isSprinting) {
+      this.sprite.setTint(0xaaffcc);
+    } else {
+      this.sprite.clearTint();
+    }
 
     // Noise for monster hearing
     if (vx === 0 && vy === 0) {

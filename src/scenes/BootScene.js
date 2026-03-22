@@ -8,13 +8,39 @@ export default class BootScene extends Phaser.Scene {
   create() {
     const g = this.make.graphics({ add: false });
 
-    // Player sprite (green circle)
-    g.clear();
-    g.fillStyle(0x44cc44);
-    g.fillCircle(12, 12, 10);
-    g.lineStyle(2, 0x228822);
-    g.strokeCircle(12, 12, 10);
-    g.generateTexture('player', 24, 24);
+    // Player sprite — humanoid top-down, 4 directions
+    const drawPlayer = (headX, headY, headR, bodyX, bodyY, visorFn) => {
+      g.clear();
+      // Body (top-down torso oval)
+      g.fillStyle(0x336633);
+      g.fillEllipse(bodyX, bodyY, 14, 8);
+      g.lineStyle(1, 0x224422);
+      g.strokeEllipse(bodyX, bodyY, 14, 8);
+      // Head
+      g.fillStyle(0x44aa44);
+      g.fillCircle(headX, headY, headR);
+      g.lineStyle(1, 0x224422);
+      g.strokeCircle(headX, headY, headR);
+      // Visor
+      g.fillStyle(0x00ffcc);
+      visorFn();
+    };
+
+    // Down — head top-center, visor on bottom edge of head
+    drawPlayer(12, 7, 6, 12, 16, () => g.fillRect(8, 10, 8, 2));
+    g.generateTexture('player_down', 24, 24);
+
+    // Up — head top-center, hair/back detail instead of visor
+    drawPlayer(12, 7, 6, 12, 16, () => { g.fillStyle(0x225522); g.fillRect(9, 3, 6, 2); });
+    g.generateTexture('player_up', 24, 24);
+
+    // Left — head offset left, visor on left edge
+    drawPlayer(8, 9, 5, 14, 16, () => g.fillRect(3, 8, 3, 2));
+    g.generateTexture('player_left', 24, 24);
+
+    // Right — head offset right, visor on right edge
+    drawPlayer(16, 9, 5, 10, 16, () => g.fillRect(18, 8, 3, 2));
+    g.generateTexture('player_right', 24, 24);
 
     // Monster sprite (red with horns)
     g.clear();
